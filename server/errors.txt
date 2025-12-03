@@ -1,0 +1,5 @@
+411 - The length
+400 - Bad request
+405 - This protocol version is not supported
+404 - Resource not found
+403 - Forbbiden
