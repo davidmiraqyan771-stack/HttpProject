@@ -15,8 +15,6 @@ struct Request
 
 char *formingResponse(struct Request *req, int statusCode, char *statusCodeMessage);
 FILE *openFile(char *pathname, char *mode);
-void *GETfunc(struct Request* req, int clientSock);
-
 
 
 #endif
