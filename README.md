@@ -8,7 +8,9 @@ I just wanted to write a few things here before launching and using the program.
 
 2. Next, the client executable file will appear in the client directory, and the server executable file will appear in the server directory. IMPORTANT! For the server, it's best to run it in its own working directory; there's no difference for the client.
 
-3. The client supports multiple newlines, so if you want to mark the end of text, type ']', for example:
+3. And for disonnect you can do POST request with EXIT body or just press cntrl + C(CMD + C for mac)
+
+4. The client supports multiple newlines, so if you want to mark the end of text, type ']', for example:
 
 GET]
 
