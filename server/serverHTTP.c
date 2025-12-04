@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <time.h>
+#include <signal.h>
 #include <errno.h>
 #include "../utils/utils.h"
 
@@ -15,6 +16,7 @@
 int clientCount = 0;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 void *clientThread(void *arg);
+void handler(int);
 
 int main(void)
 {
@@ -43,7 +45,7 @@ int main(void)
         exit(EXIT_FAILURE);
     }
 
-
+    signal(SIGINT, handler);
     while (1)
     {
         if (clientCount < ACTIVE_USER_COUNT)
@@ -61,4 +63,11 @@ int main(void)
             pthread_detach(thr);
         }
     }
+}
+
+void handler(int) {
+    printf("\nServer shotdown...\n");
+    pthread_mutex_destroy(&mutex);
+
+    exit(EXIT_SUCCESS);
 }
