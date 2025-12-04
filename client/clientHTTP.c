@@ -41,17 +41,12 @@ int main(void)
     }
     while (1)
     {
-        printf("Please write the request TYPE: ");
+        printf("Please write the request TYPE (GET, POST, APPEND, ECHO): ");
         char *type = reciveTheText(START_SIZE);
-        if (strcmp(type, "EXIT") == 0)
-        {
-            free(type);
-            break;
-        }
         char *path;
         char *body;
         char *request;
-        printf("Please write the request PATH: ");
+        printf("Please write the request PATH (Please start with /): ");
         path = reciveTheText(START_SIZE);
         if (strcmp(type, "GET") == 0 || strcmp(type + 1, "GET") == 0)
         {

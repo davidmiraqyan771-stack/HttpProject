@@ -16,25 +16,19 @@ extern pthread_mutex_t mutex;
 
 void *clientThread(void *arg)
 {
-    printf("[THREAD] Started\n");
-
     int clientSock = *((int *)arg);
-    printf("[THREAD] Client socket = %d\n", clientSock);
     free(arg);
 
     while (1)
     {
-        printf("[WAIT] Waiting for request...\n");
+        printf("Waiting for request...\n");
         struct Request req;
 
         char *buf = reciveTheReqOrRes(START_REQUEST_SIZE, clientSock);
         if (buf == NULL)
         {
-            printf("[INFO] Client disconnected (reciveTheReqOrRes returned NULL)\n");
             break;
         }
-
-        printf("[RECV] Raw buffer: \"%s\"\n", buf);
 
         req.type = creDy(strlen(buf) + 1, sizeof(char));
         req.path = creDy(strlen(buf) + 1, sizeof(char));
@@ -44,50 +38,30 @@ void *clientThread(void *arg)
         req.size = 0;
         req.time = 0;
 
-        printf("[PARSE] Running sscanf...\n");
-        int scanned = sscanf(buf, "%s %s %s %*s %s %*s %ld %*s %ld",
-                             req.type, req.path, req.protocol,
-                             req.agent, &req.size, &req.time);
-
-        printf("[PARSE] sscanf scanned %d fields\n", scanned);
-        printf("[PARSE] type=\"%s\", path=\"%s\", proto=\"%s\", agent=\"%s\", size=%ld, time=%ld\n",
-               req.type, req.path, req.protocol, req.agent, req.size, req.time);
+        int scanned = sscanf(buf, "%s %s %s %*s %s %*s %ld %*s %ld", req.type, req.path, req.protocol, req.agent, &req.size, &req.time);
 
         req.type = reDy(req.type, strlen(req.type) + 1);
         req.path = reDy(req.path, strlen(req.path) + 1);
         req.protocol = reDy(req.protocol, strlen(req.protocol) + 1);
         req.agent = reDy(req.agent, strlen(req.agent) + 1);
 
-        printf("[REALLOC] After reDy: type=%s path=%s protocol=%s agent=%s\n",
-               req.type, req.path, req.protocol, req.agent);
-
         if (strstr(SUPPORTED_PROTOCOLS, req.protocol) != NULL)
         {
-            printf("[PROTO] Supported protocol: %s\n", req.protocol);
 
-            /* GET */
             if (strcmp(req.type, "GET") == 0 || strcmp(req.type + 1, "GET") == 0)
             {
-                printf("[GET] Path: %s\n", req.path);
-
                 FILE *file = openFile(req.path, "rb");
                 if (file == NULL)
                 {
-                    printf("[GET] File not found\n");
                     req.size = 0;
                     char *fiResponse = formingResponse(&req, 404, "Resource not found");
-                    printf("[SEND] 404 response\n");
                     send(clientSock, fiResponse, strlen(fiResponse), 0);
                     free(fiResponse);
                     goto free_loop;
                 }
 
-                printf("[GET] File opened\n");
-                printf("[GET] File size = %ld\n", req.size);
                 fseek(file, 0, SEEK_END);
-                printf("[GET] File END\n");
                 req.size = ftell(file);
-                printf("[GET] File size = %ld\n", req.size);
 
                 req.body = reDy(req.body, req.size + 1);
                 fseek(file, 0, SEEK_SET);
@@ -95,7 +69,6 @@ void *clientThread(void *arg)
                 req.body[req.size] = '\0';
                 fclose(file);
 
-                printf("[GET] Body loaded: %ld bytes\n", req.size);
             }
 
             /* POST */
