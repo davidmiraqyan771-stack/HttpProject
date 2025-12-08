@@ -51,11 +51,11 @@ int main(void)
         if (clientCount < ACTIVE_USER_COUNT)
         {
             int clientSock = accept(servSocket, NULL, NULL);
-            printf("New Client: %d\n", clientSock - 3);
             pthread_mutex_lock(&mutex);
             clientCount++;
             pthread_mutex_unlock(&mutex);
-            int *s = creDy(1, sizeof(int));
+            printf("New Client: %d\n", clientCount);
+            int *s = (int *)creDy(1, sizeof(int));
             *s = clientSock;
 
             pthread_t thr;
@@ -65,7 +65,8 @@ int main(void)
     }
 }
 
-void handler(int) {
+void handler(int)
+{
     printf("\nServer shotdown...\n");
     pthread_mutex_destroy(&mutex);
 

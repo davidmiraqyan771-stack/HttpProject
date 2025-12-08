@@ -22,7 +22,7 @@ void *clientThread(void *arg)
     while (1)
     {
         struct Request req;
-
+        fflush(stdout);
         char *buf = reciveTheReqOrRes(START_REQUEST_SIZE, clientSock);
         if (buf == NULL)
         {
@@ -36,22 +36,19 @@ void *clientThread(void *arg)
             break;
         }
 
-        req.type = creDy(strlen(buf) + 1, sizeof(char));
-        req.path = creDy(strlen(buf) + 1, sizeof(char));
-        req.protocol = creDy(strlen(buf) + 1, sizeof(char));
-        req.agent = creDy(strlen(buf) + 1, sizeof(char));
-        req.body = creDy(1, sizeof(char));
+        req.type = (char *)creDy(strlen(buf) + 1, sizeof(char));
+        req.path = (char *)creDy(strlen(buf) + 1, sizeof(char));
+        req.protocol = (char *)creDy(strlen(buf) + 1, sizeof(char));
+        req.agent = (char *)creDy(strlen(buf) + 1, sizeof(char));
+        req.body = (char *)creDy(1, sizeof(char));
         req.size = 0;
         req.time = 0;
         req.append = 0;
-
         sscanf(buf, "%s %s %s %*s %s %*s %ld %*s %ld %*s %hhd", req.type, req.path, req.protocol, req.agent, &req.size, &req.time, &req.append);
-
         req.type = reDy(req.type, strlen(req.type) + 1);
         req.path = reDy(req.path, strlen(req.path) + 1);
         req.protocol = reDy(req.protocol, strlen(req.protocol) + 1);
         req.agent = reDy(req.agent, strlen(req.agent) + 1);
-
         char done = 0;
         char *fiResponse = NULL;
 
@@ -88,13 +85,13 @@ void *clientThread(void *arg)
         {
             req.body = reDy(req.body, req.size + 1);
 
-            char *bodyAddr = strrchr(buf, '\1');
+            char *bodyAddr = strrchr(buf, '\2');
             if (bodyAddr)
             {
                 bodyAddr++;
                 size_t len = strlen(bodyAddr);
                 if (len > req.size)
-                {
+                {   
                     len = req.size;
                 }
                 memcpy(req.body, bodyAddr, len);

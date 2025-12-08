@@ -6,8 +6,8 @@
 
 char *reciveTheReqOrRes(size_t startSize, int clientSock)
 {
-    char *mainBuf = creDy(startSize, sizeof(char));
-    char *buf1 = creDy(startSize, sizeof(char));
+    char *mainBuf = (char *)creDy(startSize, sizeof(char));
+    char *buf1 = (char *)creDy(startSize, sizeof(char));
     size_t learnedText = 0;
     size_t previousLearnedText;
     previousLearnedText = learnedText;
@@ -20,7 +20,8 @@ char *reciveTheReqOrRes(size_t startSize, int clientSock)
             mainBuf = reDy(mainBuf, startSize);
         }
         int n = recv(clientSock, buf1, 20, 0);
-        if(n <= 0) {
+        if (n <= 0)
+        {
             return NULL;
         }
         buf1[n] = '\0';

@@ -5,7 +5,7 @@
 
 char *formingResponse(struct Request *req1, int statusCode, char *statusCodeMessage)
 {
-    char *response = creDy((strlen(req1->body) + strlen(req1->path) + strlen(req1->type) + strlen(req1->protocol) + strlen(statusCodeMessage)) * 2 + 300, sizeof(char));
+    char *response = (char *)creDy((strlen(req1->body) + strlen(req1->path) + strlen(req1->type) + strlen(req1->protocol) + strlen(statusCodeMessage)) * 2 + 300, sizeof(char));
     sprintf(response, "%s %d %s\r\n", req1->protocol, statusCode, statusCodeMessage);
     sprintf(response + strlen(response), "Body-size: %ld\r\n", req1->size);
     sprintf(response + strlen(response), "Time: %lds\r\n\r\n", time(NULL) - req1->time);
@@ -20,7 +20,7 @@ FILE *openFile(char *pathname, char *mode)
     {
         return NULL;
     }
-    char *path = creDy(strlen(pathname) + strlen("data"), sizeof(char));
+    char *path = (char *)creDy(strlen(pathname) + strlen("data"), sizeof(char));
     strcat(path, "data");
     strcat(path, pathname + 1);
     FILE *file = fopen(path, mode);

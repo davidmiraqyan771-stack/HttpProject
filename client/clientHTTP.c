@@ -52,9 +52,9 @@ int main(void)
         path = reciveTheText(START_SIZE);
         if (strcmp(type, "GET") == 0 || strcmp(type + 1, "GET") == 0)
         {
-            body = creDy(1, sizeof(char));
+            body = (char *)creDy(1, sizeof(char));
             size_t size = strlen(type) + strlen(path) + 4;
-            request = creDy(size, sizeof(char));
+            request = (char *)creDy(size, sizeof(char));
             request = strcat(request, type);
             request = strcat(request, " ");
             request = strcat(request, path);
@@ -67,14 +67,16 @@ int main(void)
             if (strcmp(body, "yes") == 0 || strcmp(body + 1, "yes") == 0)
             {
                 append = 1;
-            } else {
+            }
+            else
+            {
                 append = 0;
             }
             free(body);
             printf("Please write the request BODY:\n");
             body = reciveTheText(START_SIZE);
             size_t size = strlen(type) + strlen(path) + strlen(body) + 4;
-            request = creDy(size, sizeof(char));
+            request = (char *)creDy(size, sizeof(char));
             request = strcat(request, type);
             request = strcat(request, " ");
             request = strcat(request, path);
@@ -86,7 +88,7 @@ int main(void)
             printf("Please write the request BODY:\n");
             body = reciveTheText(START_SIZE);
             size_t size = strlen(type) + strlen(path) + strlen(body) + 4;
-            request = creDy(size, sizeof(char));
+            request = (char *)creDy(size, sizeof(char));
             request = strcat(request, type);
             request = strcat(request, " ");
             request = strcat(request, path);
@@ -105,6 +107,7 @@ int main(void)
         free(body);
         char *fiRequest = formingRequest(request);
         send(sockFd, fiRequest, strlen(fiRequest), 0);
+        send(sockFd, "\0", 1, 0);
         free(request);
         if (strstr(fiRequest, "EXIT"))
         {
@@ -135,7 +138,6 @@ char *reciveTheText(size_t startSize)
         }
         buf[readedValues++] = charcter;
     }
-
     if (strcspn(buf, "\n") != strlen(buf))
     {
         buf[strcspn(buf, "\n")] = '\1';
@@ -152,13 +154,13 @@ char *formingRequest(char *request)
     *body++ = '\0';
     body[strlen(body)] = '\0';
 
-    char *finishedRequest = creDy((strlen(request) + strlen(body)) * 2 + 300, sizeof(char));
+    char *finishedRequest = (char *)creDy((strlen(request) + strlen(body)) * 2 + 300, sizeof(char));
 
     sprintf(finishedRequest, "%s %s\r\n", request, PROTOCOL);
     sprintf(finishedRequest + strlen(finishedRequest), "User-Agent: %s\r\n", USER_AGENT);
     sprintf(finishedRequest + strlen(finishedRequest), "Body-Size: %ld\r\n", strlen(body) - 1);
     sprintf(finishedRequest + strlen(finishedRequest), "Time: %ld\r\n", time(NULL));
-    sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\1", append);
+    sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\2", append);
     sprintf(finishedRequest + strlen(finishedRequest), "%s", body);
     return finishedRequest;
 }
