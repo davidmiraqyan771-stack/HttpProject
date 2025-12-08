@@ -43,8 +43,9 @@ void *clientThread(void *arg)
         req.body = creDy(1, sizeof(char));
         req.size = 0;
         req.time = 0;
+        req.append = 0;
 
-        sscanf(buf, "%s %s %s %*s %s %*s %ld %*s %ld", req.type, req.path, req.protocol, req.agent, &req.size, &req.time);
+        sscanf(buf, "%s %s %s %*s %s %*s %ld %*s %ld %*s %hhd", req.type, req.path, req.protocol, req.agent, &req.size, &req.time, &req.append);
 
         req.type = reDy(req.type, strlen(req.type) + 1);
         req.path = reDy(req.path, strlen(req.path) + 1);
@@ -110,7 +111,7 @@ void *clientThread(void *arg)
             }
             else
             {
-                FILE *file = openFile(req.path, "w");
+                FILE *file = openFile(req.path, (req.append ? "a" : "w"));
 
                 if (!file)
                 {
@@ -158,47 +159,6 @@ void *clientThread(void *arg)
                 memcpy(req.body, bodyAddr, len);
                 req.body[len] = '\0';
 
-                fiResponse = formingResponse(&req, 200, "OK");
-            }
-        }
-        else if (strcmp(req.type, "APPEND") == 0 || strcmp(req.type + 1, "APPEND") == 0)
-        {
-            req.body = reDy(req.body, req.size + 1);
-
-            char *bodyAddr = strrchr(buf, '\1');
-            if (bodyAddr)
-            {
-                bodyAddr++;
-                size_t len = strlen(bodyAddr);
-                if (len > req.size)
-                {
-                    len = req.size;
-                }
-
-                memcpy(req.body, bodyAddr, len);
-                req.body[len] = '\0';
-            }
-            else
-            {
-                req.body[0] = '\0';
-            }
-
-            FILE *file = openFile(req.path, "a");
-
-            if (file == NULL)
-            {
-                req.size = 0;
-                req.body[0] = '\0';
-
-                fiResponse = formingResponse(&req, (errno != ENONET ? 403 : 404), (errno != ENONET ? "Forbidden" : "Resource not found"));
-            }
-            else
-            {
-                fwrite(req.body, 1, strlen(req.body), file);
-                fclose(file);
-                req.body = reDy(req.body, 2);
-                req.body[0] = '\0';
-                req.size = 0;
                 fiResponse = formingResponse(&req, 200, "OK");
             }
         }

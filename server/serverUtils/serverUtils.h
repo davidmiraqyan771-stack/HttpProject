@@ -11,6 +11,7 @@ struct Request
     char *agent;
     size_t size;
     size_t time;
+    char append;
 };
 
 char *formingResponse(struct Request *req, int statusCode, char *statusCodeMessage);

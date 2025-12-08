@@ -16,6 +16,8 @@ char *formingRequest(char *request);
 
 #define START_SIZE 20
 
+char append = 0;
+
 int main(void)
 {
 
@@ -41,7 +43,7 @@ int main(void)
     }
     while (1)
     {
-        printf("Please write the request TYPE (GET, POST, APPEND, ECHO): ");
+        printf("Please write the request TYPE (GET, POST, ECHO): ");
         char *type = reciveTheText(START_SIZE);
         char *path;
         char *body;
@@ -58,7 +60,28 @@ int main(void)
             request = strcat(request, path);
             request = strcat(request, "\n");
         }
-        else if (strcmp(type, "POST") == 0 || strcmp(type, "ECHO") == 0 || strcmp(type, "APPEND") == 0 || strcmp(type + 1, "APPEND") == 0 || strcmp(type + 1, "POST") == 0 || strcmp(type + 1, "ECHO") == 0)
+        else if (strcmp(type, "POST") == 0 || strcmp(type + 1, "POST") == 0)
+        {
+            printf("Do you want to append (write yes or no)?\n");
+            body = reciveTheText(START_SIZE);
+            if (strcmp(body, "yes") == 0 || strcmp(body + 1, "yes") == 0)
+            {
+                append = 1;
+            } else {
+                append = 0;
+            }
+            free(body);
+            printf("Please write the request BODY:\n");
+            body = reciveTheText(START_SIZE);
+            size_t size = strlen(type) + strlen(path) + strlen(body) + 4;
+            request = creDy(size, sizeof(char));
+            request = strcat(request, type);
+            request = strcat(request, " ");
+            request = strcat(request, path);
+            request = strcat(request, "\n");
+            request = strcat(request, body);
+        }
+        else if (strcmp(type, "ECHO") == 0 || strcmp(type + 1, "ECHO") == 0)
         {
             printf("Please write the request BODY:\n");
             body = reciveTheText(START_SIZE);
@@ -134,7 +157,8 @@ char *formingRequest(char *request)
     sprintf(finishedRequest, "%s %s\r\n", request, PROTOCOL);
     sprintf(finishedRequest + strlen(finishedRequest), "User-Agent: %s\r\n", USER_AGENT);
     sprintf(finishedRequest + strlen(finishedRequest), "Body-Size: %ld\r\n", strlen(body) - 1);
-    sprintf(finishedRequest + strlen(finishedRequest), "Time: %ld\r\n\r\n\1", time(NULL));
+    sprintf(finishedRequest + strlen(finishedRequest), "Time: %ld\r\n", time(NULL));
+    sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\1", append);
     sprintf(finishedRequest + strlen(finishedRequest), "%s", body);
     return finishedRequest;
 }
