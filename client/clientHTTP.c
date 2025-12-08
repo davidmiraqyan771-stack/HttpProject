@@ -107,7 +107,7 @@ int main(void)
         free(body);
         char *fiRequest = formingRequest(request);
         send(sockFd, fiRequest, strlen(fiRequest), 0);
-        send(sockFd, "\0", 1, 0);
+        // send(sockFd, "\2", 1, 0);
         free(request);
         if (strstr(fiRequest, "EXIT"))
         {
@@ -161,6 +161,6 @@ char *formingRequest(char *request)
     sprintf(finishedRequest + strlen(finishedRequest), "Body-Size: %ld\r\n", strlen(body) - 1);
     sprintf(finishedRequest + strlen(finishedRequest), "Time: %ld\r\n", time(NULL));
     sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\1", append);
-    sprintf(finishedRequest + strlen(finishedRequest), "%s", body);
+    sprintf(finishedRequest + strlen(finishedRequest), "%s\2", body);
     return finishedRequest;
 }

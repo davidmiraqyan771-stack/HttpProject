@@ -19,6 +19,10 @@ char *reciveTheReqOrRes(size_t startSize, int clientSock)
             buf1 = reDy(buf1, startSize);
             mainBuf = reDy(mainBuf, startSize);
         }
+        if(strstr(mainBuf, "\2") != NULL) {
+            mainBuf[strstr(mainBuf, "\2") - mainBuf] = '\0';
+            break;
+        }
         int n = recv(clientSock, buf1, 20, 0);
         if (n <= 0)
         {

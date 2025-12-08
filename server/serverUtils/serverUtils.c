@@ -9,7 +9,7 @@ char *formingResponse(struct Request *req1, int statusCode, char *statusCodeMess
     sprintf(response, "%s %d %s\r\n", req1->protocol, statusCode, statusCodeMessage);
     sprintf(response + strlen(response), "Body-size: %ld\r\n", req1->size);
     sprintf(response + strlen(response), "Time: %lds\r\n\r\n", time(NULL) - req1->time);
-    sprintf(response + strlen(response), "%s", req1->body);
+    sprintf(response + strlen(response), "%s\2", req1->body);
 
     return response;
 }
