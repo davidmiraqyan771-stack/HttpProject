@@ -85,7 +85,7 @@ void *clientThread(void *arg)
         {
             req.body = reDy(req.body, req.size + 1);
 
-            char *bodyAddr = strrchr(buf, '\2');
+            char *bodyAddr = strrchr(buf, '\1');
             if (bodyAddr)
             {
                 bodyAddr++;

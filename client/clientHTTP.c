@@ -160,7 +160,7 @@ char *formingRequest(char *request)
     sprintf(finishedRequest + strlen(finishedRequest), "User-Agent: %s\r\n", USER_AGENT);
     sprintf(finishedRequest + strlen(finishedRequest), "Body-Size: %ld\r\n", strlen(body) - 1);
     sprintf(finishedRequest + strlen(finishedRequest), "Time: %ld\r\n", time(NULL));
-    sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\2", append);
+    sprintf(finishedRequest + strlen(finishedRequest), "Append: %d\r\n\r\n\1", append);
     sprintf(finishedRequest + strlen(finishedRequest), "%s", body);
     return finishedRequest;
 }
